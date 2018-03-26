@@ -13,6 +13,14 @@ tf.logging.set_verbosity(tf.logging.INFO)
 if __name__ == "__main__":
     tf.app.run()
 
+def main(unused_argv):
+    # Load training and evaluation data
+    mnist = tf.contrib.learn.datasets.load_dataset("mnist")
+    train_data = mnist.train.images # Returns np.array
+    train_labels = np.asarray(mnist.train.labels, dtype = np.int32)
+    eval_data = mnist.test.images # Returns np.array
+    eval_labels = np.asarray(mnist.test.labels, dtype=np.int32)
+
 def cnn_model_fn (features, labels, mode):
     """Model function for Convolutional Neural Networks"""
     # Input Layer

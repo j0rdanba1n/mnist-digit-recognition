@@ -8,11 +8,6 @@ import tensorflow as tf
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
-# Application logic will be added here
-
-if __name__ == "__main__":
-    tf.app.run()
-
 def main(unused_argv):
     # Load training and evaluation data
     mnist = tf.contrib.learn.datasets.load_dataset("mnist")
@@ -29,8 +24,7 @@ def main(unused_argv):
     logging_hook = tf.train.LoggingTensorHook(tensors = tensors_to_log, every_n_iter = 50)
 
     # Train the model
-    train_input_fn = tf.estimator.inputs.numpy_input_fn
-    (
+    train_input_fn = tf.estimator.inputs.numpy_input_fn (
         x = {"x" : train_data},
         y = train_labels,
         batch_size = 100,
@@ -38,11 +32,10 @@ def main(unused_argv):
         shuffle = True
     )
 
-    mnist_classifier.train(input_fn = train_input_fn, steps = 20000, hooks=[logging_hook])
+    mnist_classifier.train(input_fn = train_input_fn, steps = 500, hooks=[logging_hook])
 
     # Evaluate the model and print results
-    eval_input_fn = tf.estimator.inputs.numpy_input_fn
-    (
+    eval_input_fn = tf.estimator.inputs.numpy_input_fn (
         x = {"x" : eval_data},
         y = eval_labels,
         num_epochs = 1,
@@ -58,8 +51,7 @@ def cnn_model_fn (features, labels, mode):
     input_layer = tf.reshape(features["x"], [-1, 28, 28, 1])
 
     # Convolutional Layer #1
-    conv1 = tf.layers.conv2d
-    (
+    conv1 = tf.layers.conv2d (
         inputs=input_layer,
         filters=32,
         kernel_size=[5,5],
@@ -71,8 +63,7 @@ def cnn_model_fn (features, labels, mode):
     pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2,2], strides=2)
 
     #Convolutional Layer #2
-    conv2 = tf.layers.conv2d
-    (
+    conv2 = tf.layers.conv2d (
         inputs=pool1,
         filters=64,
         kernel_size=[5,5],
@@ -96,8 +87,7 @@ def cnn_model_fn (features, labels, mode):
     logits = tf.layers.dense(inputs = dropout, units = 10)
 
     # Extract predictions
-    predictions =
-    {
+    predictions = {
         "classes" : tf.argmax(input=logits, axis=1),
         "probabilities" : tf.nn.softmax(logits, name="softmax_tensor")
     }
@@ -117,9 +107,11 @@ def cnn_model_fn (features, labels, mode):
         return tf.estimator.EstimatorSpec(mode = mode, loss = loss, train_op = train_op)
 
     # Calculate evaluation metrics (for EVAL mode)
-    eval_metric_ops =
-    {
+    eval_metric_ops = {
         "accuracy" : tf.metrics.accuracy(labels = labels, predictions = predictions["classes"])
     }
 
     return tf.estimator.EstimatorSpec(mode = mode, loss = loss, eval_metric_ops = eval_metric_ops)
+
+if __name__ == "__main__":
+    tf.app.run()
